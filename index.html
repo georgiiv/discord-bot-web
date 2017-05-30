@@ -19,15 +19,20 @@
 			background-attachment: fixed;
 			background-size: cover;
 		}
-		.btn{
+		.btn-lg{
 			width: 200px;
 			height: 100px;
 			margin-left: 50px;
 			margin-right: 50px;
 		}		
 	</style>
-
+<body>
 	<center>
+	<br><br>
+	<form method="post" enctype="multipart/form-data" action="/upload">
+		<input type="file" name="sound">
+		<input class="btn btn-success" type="submit" value="Submit">
+	</form>
 		<br><br><br>
 		<div id="buttons">
 		</div>

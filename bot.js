@@ -2,6 +2,7 @@ const express = require('express')
 const app = express()
 var bodyParser = require('body-parser');
 var fs = require("fs");
+var multer = require('multer');
 
 app.use(bodyParser.json());
 
@@ -36,10 +37,32 @@ app.get('/files', function(req, res){
 })
 
 app.post('/play', function(req, res) {
-		playSound(req.body.id, req.body.file);
-		res.send("It works");
-
+	playSound(req.body.id, req.body.file);
+	res.send("It works");
 })
+
+app.post('/upload', function(req, res) {
+	var storage = multer.diskStorage({
+		destination: function (request, file, callback) {
+			callback(null, './sounds');
+		},
+		filename: function (request, file, callback) {
+			callback(null, file.originalname)
+		}
+	});
+	var upload = multer({storage: storage}).single('sound');
+
+	upload(req, res, function(err) {
+	if(err){
+		console.log(err);
+		return;
+	}
+	console.log(req.file.originalname + " uploaded");
+	res.redirect('/');
+	})
+});
+
+
 
 client.on('message', message => {
 	if(message.content === (prefix + 'ping')){
