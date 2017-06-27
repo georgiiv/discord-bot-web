@@ -11,7 +11,7 @@ app.use(bodyParser.json());
 //******************************************************************************
 const token = 'MzE4NDA3OTU5MjI0OTA5ODI0.DA4AKg.TAcRaJeY3gn_MggGg_n1kaZ1lss';
 const port = 8080;
-const hostlink = "http://5.53.168.140:8090";
+const hostlink = "localhost:8080";
 prefix = '!';
 //******************************************************************************
 
