@@ -3,16 +3,20 @@ const app = express()
 var bodyParser = require('body-parser');
 var fs = require("fs");
 var multer = require('multer');
+const Discord = require('discord.js');
+const client = new Discord.Client();
 
 app.use(bodyParser.json());
 
-const Discord = require('discord.js');
-const client = new Discord.Client();
+//******************************************************************************
 const token = 'MzE4NDA3OTU5MjI0OTA5ODI0.DA4AKg.TAcRaJeY3gn_MggGg_n1kaZ1lss';
+const port = 8080;
+const hostlink = "http://5.53.168.140:8090";
 prefix = '!';
+//******************************************************************************
 
 client.on('ready', () => {
-	console.log("Bot is primed");
+	console.log("Bot is connected");
 });
 
 function playSound(id, file){
@@ -53,12 +57,16 @@ app.post('/upload', function(req, res) {
 	var upload = multer({storage: storage}).single('sound');
 
 	upload(req, res, function(err) {
-	if(err){
-		console.log(err);
-		return;
-	}
-	console.log(req.file.originalname + " uploaded");
-	res.redirect('/');
+		if(err){
+			console.log(err);
+			return;
+		}
+		//console.log(req.file.originalname + " uploaded");
+		if(req.body.channelid){
+			res.redirect('/?id='+req.body.channelid);
+		}else{
+			res.send("No voice channel ID sent")
+		}
 	})
 });
 
@@ -75,11 +83,14 @@ client.on('message', message => {
 		channel.join()
 		.then(connection => {})
 		.catch(console.error);
+
+		message.delete()
 	}
 
 	if(message.content === (prefix + 'leave')){
 		const channel = message.member.voiceChannel;
 		channel.leave();
+		message.delete()
 	}
 
 
@@ -89,6 +100,7 @@ client.on('message', message => {
 		sound = message.content.split(" ")[1];
 
 		playSound(channel.id, sound+".mp3");
+		message.delete()
 	}
 
 
@@ -104,18 +116,24 @@ client.on('message', message => {
 					result = result + file.split(".mp3")[0] + "\n";
 				});
 				message.reply(result+"```");
+				message.delete()
 			})
 		}
 	}
 
 	if(message.content === (prefix + 'link')){
-		host = "http://5.53.168.140:8080";
-		message.reply(host + "/?id=" + message.member.voiceChannel.id);
+		message.reply(hostlink + "/?id=" + message.member.voiceChannel.id);
+		message.delete()
+	}
+
+	if(message.content === (prefix + 'tts')){
+		message.channel.send("This is a tts message", {tts: true});
+		message.delete()
 	}
 });
 
-app.listen(8080, function () {
-	console.log('Example app listening on port 8080!');
+app.listen(port, function () {
+	console.log('Bot is running on port:', port);
 })
 
 client.login(token);

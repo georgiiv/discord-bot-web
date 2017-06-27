@@ -24,18 +24,24 @@
 			height: 100px;
 			margin-left: 50px;
 			margin-right: 50px;
+			margin-top: 30px;
 		}		
 	</style>
 <body>
 	<center>
-	<br><br>
-	<form method="post" enctype="multipart/form-data" action="/upload">
-		<input type="file" name="sound">
-		<input class="btn btn-success" type="submit" value="Submit">
-	</form>
-		<br><br><br>
+		<br><br>
+		<input class="form-control" id="ytlink" type="text" name="yt" placeholder="Youtube link" style="width: 400px; display: inline;">
+		<button class="btn btn-success" id="ytsubmit">Play</button>
+
 		<div id="buttons">
 		</div>
+
+		<br><br>
+		<form method="post" enctype="multipart/form-data" action="/upload">
+			<input type="file" name="sound">
+			<input type="text" name="channelid" id="channelid" style="display: none;">
+			<input class="btn btn-success" type="submit" value="Submit">
+		</form>
 	</center>
 
 	<script
@@ -56,19 +62,26 @@
 			return params;
 		}
 
-		urlpar = getQueryParams(document.location.search);
-
 		$(document).ready(function(){
+			urlpar = getQueryParams(document.location.search);
+
+			if(urlpar.id){
+			}else{
+				$("body").html("No voice channel ID in URL")
+			}
+
+			$("#channelid").val(urlpar.id)
+
 			$.ajax("/files", {
 			method: "GET",
 			dataType: "json"
 			}).then(function(response){
 				$.each(response, function(i, item) {
-	  				$("#buttons").append('<button class="btn btn-danger btn-lg" id="'+item+'">'+item+'</button');
+	  				$("#buttons").append('<button class="soundbtn btn btn-danger btn-lg" id="'+item+'">'+item+'</button>');
 				});
 			})
 
-			$(document).on("click", ".btn", function(){
+			$(document).on("click", ".soundbtn", function(){
 				$.ajax("/play", {
 					method: "POST",
 					contentType: "application/json; charset=utf-8",
